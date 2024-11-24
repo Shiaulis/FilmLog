@@ -5,11 +5,10 @@
 //  Created by Andrius Shiaulis on 23.11.2024.
 //
 
-import UIKit
 import Combine
+import UIKit
 
 final class FilmListViewController: UICollectionViewController {
-
     enum Section {
         case main
     }
@@ -31,13 +30,14 @@ final class FilmListViewController: UICollectionViewController {
         super.init(collectionViewLayout: layout)
         self.title = "Film Rolls"
 
-        let uiAction: UIAction = UIAction { [weak self] _ in
+        let uiAction = UIAction { [weak self] _ in
             self?.viewModel.addFilm()
         }
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(systemItem: .add, primaryAction: uiAction)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .add, primaryAction: uiAction)
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -49,6 +49,7 @@ final class FilmListViewController: UICollectionViewController {
     }
 
     // MARK: - Data Source Configuration
+
     private func configureDataSource() {
         let cellRegistration = CellRegistration { [weak self] cell, _, id in
             guard let self, let film = self.viewModel.getFilm(for: id) else {
@@ -64,9 +65,9 @@ final class FilmListViewController: UICollectionViewController {
         }
 
         self.diffableDataSource =
-        DataSource(collectionView: collectionView) { (collectionView, indexPath, id) -> UICollectionViewCell? in
-            collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: id)
-        }
+            DataSource(collectionView: collectionView) { collectionView, indexPath, id -> UICollectionViewCell? in
+                collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: id)
+            }
     }
 
     private func bindViewModel() {
@@ -78,6 +79,7 @@ final class FilmListViewController: UICollectionViewController {
     }
 
     // MARK: - Snapshot
+
     private func applySnapshot(_ ids: [Film.ID]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
@@ -87,7 +89,8 @@ final class FilmListViewController: UICollectionViewController {
     }
 
     // MARK: - Item Selection
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+    override func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let id = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         self.viewModel.selectFilm(with: id)
     }

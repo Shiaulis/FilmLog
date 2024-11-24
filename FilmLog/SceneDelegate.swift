@@ -8,13 +8,12 @@
 import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     var window: UIWindow?
 
     func scene(
         _ scene: UIScene,
-        willConnectTo session: UISceneSession,
-        options connectionOptions: UIScene.ConnectionOptions
+        willConnectTo _: UISceneSession,
+        options _: UIScene.ConnectionOptions
     ) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(windowScene: windowScene)
@@ -26,5 +25,4 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window!.rootViewController = navigationController
         self.window!.makeKeyAndVisible()
     }
-
 }

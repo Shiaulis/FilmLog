@@ -5,19 +5,16 @@
 //  Created by Andrius Shiaulis on 24.11.2024.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 protocol FilmListController {
-
     func makeFilmListPublisher() -> any Publisher<[Film.ID], Never>
     func getFilm(for id: Film.ID) throws -> Film
     func addFilm()
-
 }
 
 final class InMemoryFilmListController: FilmListController {
-
     enum Error: Swift.Error {
         case filmNotFound
     }
@@ -54,5 +51,4 @@ final class InMemoryFilmListController: FilmListController {
         self.inMemoryDatabase.sort(by: { $0.title < $1.title })
         self.subject.send(self.inMemoryDatabase.map(\.id))
     }
-
 }

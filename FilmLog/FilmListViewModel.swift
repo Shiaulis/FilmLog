@@ -5,19 +5,18 @@
 //  Created by Andrius Shiaulis on 24.11.2024.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 /// Represents a film roll for analog photography
 struct Film: Identifiable {
     let id: UUID
-    let title: String  // Film name or identifier
-    let brand: String  // Film brand (e.g., Kodak, Fujifilm)
-    let iso: Int       // ISO rating of the film
+    let title: String // Film name or identifier
+    let brand: String // Film brand (e.g., Kodak, Fujifilm)
+    let iso: Int // ISO rating of the film
 }
 
 final class FilmListViewModel {
-
     // MARK: - Properties
 
     private let controller: FilmListController
@@ -29,6 +28,7 @@ final class FilmListViewModel {
     }
 
     // MARK: - Init -
+
     init(controller: FilmListController) {
         self.controller = controller
     }
@@ -55,5 +55,4 @@ final class FilmListViewModel {
     func addFilm() {
         self.controller.addFilm()
     }
-
 }
