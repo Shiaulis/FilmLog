@@ -14,6 +14,10 @@ final class FilmListViewController: UICollectionViewController {
         case main
     }
 
+    typealias DataSource = UICollectionViewDiffableDataSource<Section, Film.ID>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Film.ID>
+    typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, UUID>
+
     private let viewModel: FilmListViewModel
     private var diffableDataSource: UICollectionViewDiffableDataSource<Section, UUID>!
     private var disposables: Set<AnyCancellable> = []
@@ -46,7 +50,7 @@ final class FilmListViewController: UICollectionViewController {
 
     // MARK: - Data Source Configuration
     private func configureDataSource() {
-        let cellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, UUID> { [weak self] cell, indexPath, id in
+        let cellRegistration = CellRegistration { [weak self] cell, _, id in
             guard let self, let film = self.viewModel.getFilm(for: id) else {
                 fatalError("No film found for ID: \(id)")
             }
@@ -59,8 +63,8 @@ final class FilmListViewController: UICollectionViewController {
             cell.contentConfiguration = content
         }
 
-        self.diffableDataSource = UICollectionViewDiffableDataSource<Section, UUID>(collectionView: collectionView) {
-            (collectionView, indexPath, id) -> UICollectionViewCell? in
+        self.diffableDataSource =
+        DataSource(collectionView: collectionView) { (collectionView, indexPath, id) -> UICollectionViewCell? in
             collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: id)
         }
     }
@@ -75,7 +79,7 @@ final class FilmListViewController: UICollectionViewController {
 
     // MARK: - Snapshot
     private func applySnapshot(_ ids: [Film.ID]) {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, UUID>()
+        var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(ids, toSection: .main)
 

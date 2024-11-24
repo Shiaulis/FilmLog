@@ -1,0 +1,3 @@
+disabled_rules: # Disable rules that don't fit your codebase.
+  - trailing_comma
+  - statement_position
