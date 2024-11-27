@@ -6,49 +6,53 @@
 //
 
 import Combine
+import CoreData
 import Foundation
 
-protocol FilmListController {
-    func makeFilmListPublisher() -> any Publisher<[Film.ID], Never>
-    func getFilm(for id: Film.ID) throws -> Film
-    func addFilm()
-}
-
-final class InMemoryFilmListController: FilmListController {
+final class FilmListController {
     enum Error: Swift.Error {
         case filmNotFound
     }
 
-    private var inMemoryDatabase: [Film] = [
-        Film(id: UUID(), title: "Kodak Portra 400", brand: "Kodak", iso: 400),
-        Film(id: UUID(), title: "Fujifilm Pro 400H", brand: "Fujifilm", iso: 400),
-        Film(id: UUID(), title: "Ilford HP5 Plus", brand: "Ilford", iso: 400),
-        Film(id: UUID(), title: "YKodak Tri-X 400", brand: "Kodak", iso: 400),
-    ]
+    private let databaseClient = DatabaseClient()
 
-    private var subject = CurrentValueSubject<[Film.ID], Never>([])
+    // MARK: - Publisher for Film List
 
-    func makeFilmListPublisher() -> any Publisher<[Film.ID], Never> {
-        sendUpdate()
-        return self.subject.eraseToAnyPublisher()
+    func makeFilmListPublisher() -> any Publisher<[Film.ID], NSError> {
+        let fetchPublisher: CoreDataFetchPublisher<FLFilm> = databaseClient.makeFilmListPublisher()
+        return fetchPublisher.map { films in
+            print()
+            return films.map(\.id!)
+        }
+        .eraseToAnyPublisher()
     }
 
+    // MARK: - Get a Film by ID
+
     func getFilm(for id: Film.ID) throws -> Film {
-        guard let film = self.inMemoryDatabase.first(where: { $0.id == id }) else {
+        // Fetch the film with the given ID from the database
+        let predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        let fetchedFilms: [FLFilm] = try databaseClient.fetch(FLFilm.self, predicate: predicate)
+
+        guard let fetchedFilm = fetchedFilms.first else {
             throw Error.filmNotFound
         }
 
-        return film
+        // Map FLFilm (CoreData model) to Film (Swift model)
+        return Film(id: fetchedFilm.id!, title: fetchedFilm.title!, brand: fetchedFilm.brand!, iso: fetchedFilm.iso!)
     }
 
-    func addFilm() {
-        let film = Film(id: UUID(), title: "New Film", brand: "Generic", iso: 100)
-        self.inMemoryDatabase.append(film)
-        sendUpdate()
-    }
+    // MARK: - Add a New Film
 
-    private func sendUpdate() {
-        self.inMemoryDatabase.sort(by: { $0.title < $1.title })
-        self.subject.send(self.inMemoryDatabase.map(\.id))
+    func addFilm(title: String, brand: String, iso: Int) throws {
+        // Create a new film in Core Data
+        let newFilm: FLFilm = try databaseClient.create(FLFilm.self)
+        newFilm.id = UUID()
+        newFilm.title = title
+        newFilm.brand = brand
+        newFilm.iso = "\(iso)"
+
+        // Save changes to the database
+        try databaseClient.save()
     }
 }

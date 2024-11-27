@@ -72,9 +72,11 @@ final class FilmListViewController: UICollectionViewController {
 
     private func bindViewModel() {
         self.viewModel.makeFilmIDsPublisher()
-            .sink { [weak self] ids in
-                self?.applySnapshot(ids)
-            }
+            .sink(receiveCompletion: { completion in
+                assertionFailure("Failed to receive film IDs: \(completion)")
+            }, receiveValue: { value in
+                self.applySnapshot(value)
+            })
             .store(in: &self.disposables)
     }
 

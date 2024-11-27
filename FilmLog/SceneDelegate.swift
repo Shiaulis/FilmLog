@@ -17,7 +17,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(windowScene: windowScene)
-        let controller = InMemoryFilmListController()
+        let controller = FilmListController()
         let viewModel = FilmListViewModel(controller: controller)
         let viewController = FilmListViewController(viewModel: viewModel)
         let navigationController = UINavigationController(rootViewController: viewController)

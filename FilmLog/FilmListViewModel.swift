@@ -13,7 +13,7 @@ struct Film: Identifiable {
     let id: UUID
     let title: String // Film name or identifier
     let brand: String // Film brand (e.g., Kodak, Fujifilm)
-    let iso: Int // ISO rating of the film
+    let iso: String // ISO rating of the film
 }
 
 final class FilmListViewModel {
@@ -35,8 +35,9 @@ final class FilmListViewModel {
 
     // MARK: - Public Methods
 
-    func makeFilmIDsPublisher() -> any Publisher<[Film.ID], Never> {
+    func makeFilmIDsPublisher() -> any Publisher<[Film.ID], NSError> {
         self.controller.makeFilmListPublisher()
+            .eraseToAnyPublisher()
     }
 
     func getFilm(for id: UUID) -> Film? {
@@ -53,6 +54,6 @@ final class FilmListViewModel {
     }
 
     func addFilm() {
-        self.controller.addFilm()
+        try? self.controller.addFilm(title: "title", brand: "brand", iso: 123)
     }
 }
