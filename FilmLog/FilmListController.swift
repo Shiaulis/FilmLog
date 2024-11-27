@@ -14,7 +14,15 @@ final class FilmListController {
         case filmNotFound
     }
 
-    private let databaseClient = DatabaseClient()
+    // MARK: - Properties -
+
+    private let databaseClient: DatabaseClient
+
+    // MARK: - Initializers -
+
+    init(databaseClient: DatabaseClient) {
+        self.databaseClient = databaseClient
+    }
 
     // MARK: - Publisher for Film List
 

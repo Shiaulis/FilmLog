@@ -9,9 +9,19 @@ import UIKit
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
+    let appCore = AppCore()
+
+    func application(_: UIApplication, willFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        self.appCore.applicationStarted()
+        return true
+    }
+
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
         true
+    }
+
+    func applicationWillTerminate(_: UIApplication) {
+        self.appCore.applicationTerminated()
     }
 
     // MARK: UISceneSession Lifecycle

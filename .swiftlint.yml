@@ -1,6 +1,7 @@
 disabled_rules: # Disable rules that don't fit your codebase.
   - trailing_comma
   - statement_position
+  - force_cast
 
 line_length:
   warning: 180
